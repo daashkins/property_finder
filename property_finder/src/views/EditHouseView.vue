@@ -2,33 +2,51 @@
 import Button from '../components/Button.vue'
 import Input from '../components/Input.vue'
 import { RouterLink } from 'vue-router'
-import { ref,watchEffect } from 'vue';
+import { ref,watchEffect, onMounted } from 'vue';
 import { useHousesStore } from "../stores/useHousesStore.js";
-
+import { useRoute } from "vue-router";
+const route = useRoute();
 const store = useHousesStore();
 
+
+onMounted(async () => {
+  await store.getHouseById(route.params.id);
+})
 const selectOptions = ref(["Yes", "No"]);
 
 const newListing = ref({
-    price: null,
-    bedrooms: null,
-    bathrooms: null,
-    size: null,
-    description: "",
-    streetName: "",
-    houseNumber: null,
-    numberAddition: "",
-    zip: "",
-    city: "",
-    constructionYear: null,
-    hasGarage: null,
+    price: store.house?.price,
+    bedrooms: store.house?.rooms.bedrooms,
+    bathrooms: store.house?.rooms.bathrooms,
+    size: store.house?.size,
+    description: store.house?.description,
+    streetName: store.house?.location?.street,
+    houseNumber: store.house?.location?.houseNumber,
+    numberAddition: store.house?.location?.numberNumberAddition,
+    zip: store.house.location?.zip,
+    city: store.house.location?.city,
+    constructionYear: store.house?.constructionYear,
+    hasGarage: store.house?.hasGarage
 })
-
+// const newListing = ref({
+//     price: null,
+//     bedrooms: null,
+//     bathrooms: null,
+//     size: null,
+//     description: "",
+//     streetName: "",
+//     houseNumber: null,
+//     numberAddition: "",
+//     zip: "",
+//     city: "",
+//     constructionYear: null,
+//     hasGarage: null,
+// })
 const newListingImage = ref({
     image: null,
 })
 const fileInput = ref(null);
-let imageData = ref(null);
+let imageData = ref(store.house.image);
 
 const chooseImage = () => {
    fileInput.value.click()
@@ -61,9 +79,10 @@ event.preventDefault();
                 <RouterLink to="/">
                     <Button backIcon textAppearence isNoBg class="custom-text-color back-button">
                         Back to overview
+                        {{ houseForEdit }}
                     </Button>
                 </RouterLink>
-                <h2>Create new listing</h2>
+                <h2>Edit listing</h2>
             </div>
             <form @submit="handleSubmit">
                 <Input inputLabel='Street name' inputId="streetName" placeholder="Enter the street name"

@@ -1,4 +1,5 @@
 <script setup>
+
 defineProps({
   inputLabel: {
     type: String
@@ -11,7 +12,7 @@ defineProps({
   },
   isRequired: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   select: {
     type: Boolean,
@@ -22,30 +23,39 @@ defineProps({
     default: false,
   },
   options: {
-    type: []
+    type: Array,
   },
   modelValue: {
-    type: [String, Number],
+    type: [String, Number, File],
     default: ""
-  }
+  },
+  file: {
+    type: Boolean,
+    default: false
+  },
+  customImageUploadSize: {
+    type: String,
+    default: ''
+  },
 })
 </script>
 
 <template>
   <div class="input-container">
     <label :for="inputId" class="input-title">{{ inputLabel }} <sup v-if="isRequired" class="star">*</sup></label>
-    <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)">
+
+    <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)" :required='isRequired'>
       <option class="input" value="">Select</option>
       <option v-for="(option, index) in options" :key="index" :value="option === 'Yes' ? true : false" class="input">
         {{ option }}
       </option>
     </select>
+
     <textarea v-else-if="textarea" :id="inputId" rows="4" cols="50" :placeholder="placeholder" class="input"
-      :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"></textarea>
-    <input v-else type="text" :id="inputId" :placeholder="placeholder" required class="input" :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)">
+      :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :required='isRequired'></textarea>
 
-
+    <input v-else type="text" :id="inputId" :placeholder="placeholder" :required='isRequired' class="input"
+      :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
 
   </div>
 </template>
@@ -97,6 +107,8 @@ defineProps({
   option {
     width: 100%;
   }
+
+
 }
 
 @media only screen and (max-width: 600px) {
@@ -105,4 +117,5 @@ defineProps({
       margin-bottom: 100px;
     }
   }
-}</style>
+}
+</style>

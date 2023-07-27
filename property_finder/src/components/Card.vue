@@ -1,6 +1,7 @@
 <script setup>
 import Button from './Button.vue'
 import { ref } from "vue"
+import { RouterLink } from 'vue-router'
 
 defineProps({
     house: {
@@ -75,15 +76,17 @@ const hover = ref(false)
 </script>
 
 <template>
-    <a class="card-link" :href="'/' + house?.id" @mouseover="hover = true" @mouseleave="hover = false">
+    <a class="card-link" :href="'/house/' + house?.id" @mouseover="hover = true" @mouseleave="hover = false">
         <div :class="{ 'card-detailed': detailedCard, 'card-main': mainCard, 'card-recomendation': recomendedCard }">
             <img class="card-image" :src="house?.image" />
             <div class="card-content">
                 <div class="card-content-header">
                     <h3>{{ house?.location.street }} {{ house?.location.houseNumber }}</h3>
-                    <div
+                    <div v-if="house?.madeByMe"
                         :class="[hover === true ? 'card-content-controls-active' : 'card-content-controls', detailedCard && 'card-content-controls-mobile']">
+                        <RouterLink :to="'/edit/' + house?.id">
                         <Button editIcon isNoBg class="custom-button-padding"></Button>
+                    </RouterLink>
                         <Button deleteIcon isNoBg class="custom-button-padding"></Button>
                     </div>
                 </div>
@@ -164,6 +167,7 @@ const hover = ref(false)
 .card-detailed {
     .card-content {
         flex-grow: 1;
+
         .card-content-header {
             display: flex;
             flex-direction: row;
@@ -246,12 +250,14 @@ const hover = ref(false)
 }
 
 .card-detailed {
-    .card-content{
-    margin-top: 20px;
+    .card-content {
+        margin-top: 20px;
     }
+
     h3 {
         margin-bottom: 20px;
     }
+
     .dimensions {
         margin-bottom: 20px;
 
@@ -272,5 +278,4 @@ const hover = ref(false)
         padding: 3px !important;
     }
 
-}
-</style>
+}</style>

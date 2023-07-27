@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import router from '../router/index'
+
 export const useHousesStore = defineStore('houses', {
   state: () => ({
     houses: [],
@@ -31,6 +33,12 @@ export const useHousesStore = defineStore('houses', {
       )
       this.searchResults = searchResults.length;
       return this.filterHouses(searchResults)
+    },
+    getHouseForEditById() {
+      return (id) => {
+       const currentHouse = this.houses.find((house) => house.id === parseInt(id))
+      this.house ={ ...currentHouse }
+      }
     }
   },
   actions: {
@@ -54,6 +62,7 @@ export const useHousesStore = defineStore('houses', {
       }
     },
     async getHouseById(id) {
+      console.log(id)
       this.loading = true
       try {
        const result = await axios({
@@ -73,6 +82,35 @@ export const useHousesStore = defineStore('houses', {
         this.loading = false
       }
     },
+    async createHouse (newListing,image){
+      this.loading = true;
+      const fd = new FormData();
+      fd.append('image', image, image.name)
+      try {
+      const result =  await axios({
+          method: 'post',
+          url: `https://api.intern.d-tt.nl/api/houses`,
+          data: {...newListing},
+          headers: {
+            "X-Api-Key": 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J',
+          }}).then((response) => {
+              axios({
+              method: 'post',
+              url: `https://api.intern.d-tt.nl/api/houses/${response.data.id}/upload`,
+              data: fd,
+              headers: {
+                "X-Api-Key": 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J',
+              }})
+              return response.data;
+          })
+      this.houses = this.houses.push(result);
+      router.push({ name: 'home' });
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.loading = false
+      }
+    }, 
     deleteHouse(itemID) {
       this.houses = this.houses.filter((object) => {
         return object.id !== itemID
@@ -136,24 +174,7 @@ export const useHousesStore = defineStore('houses', {
 //     }
 //   }
 
-//   const addHouse = async (house)  => {
-//     this.loading = true
-
-//     try {
-//      await axios({
-//         method: 'post',
-//         url: `https://api.intern.d-tt.nl/api/houses`,
-//         data: {...house},
-//         headers: {
-//           "X-Api-Key": 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J',
-//         }})
-//       this.houses = this.houses.push(house);
-//     } catch (error) {
-//       console.log(error)
-//     } finally {
-//       this.loading = false
-//     }
-//   }
+  
 
 //   return {
 //     houses,

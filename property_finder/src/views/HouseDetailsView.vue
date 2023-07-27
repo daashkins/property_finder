@@ -3,12 +3,9 @@ import Button from '../components/Button.vue'
 import Card from '../components/Card.vue'
 import { useRoute } from "vue-router";
 import { onMounted } from 'vue'
-// import { storeToRefs } from 'pinia'
-// import { ref } from "vue";
 import { useHousesStore } from "../stores/useHousesStore.js";
 const store = useHousesStore();
 const route = useRoute();
-// const { houses } = storeToRefs(store);
 
 onMounted(async () => {
   await store.getHouseById(route.params.id);
