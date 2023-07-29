@@ -1,14 +1,22 @@
 <script setup>
 import Button from '../components/Button.vue'
+import PopUp from '../components/PopUp.vue'
 import Card from '../components/Card.vue'
 import { useRoute } from "vue-router";
-import { onMounted } from 'vue'
+import { onMounted, watchEffect } from 'vue'
 import { useHousesStore } from "../stores/useHousesStore.js";
 const store = useHousesStore();
 const route = useRoute();
 
+
 onMounted(async () => {
   await store.getHouseById(route.params.id);
+})
+
+watchEffect(async () => {
+  if(parseInt(route.params.id) !== store.house.id) {
+    await store.getHouseById(route.params.id);
+  }
 })
 </script>
 
@@ -17,19 +25,21 @@ onMounted(async () => {
     <div class="container">
       <div class="top-main">
         <RouterLink to="/">
-        <Button backIcon textAppearence isNoBg class="custom-text-color back-button">
-          Back to overview
-        </Button>
-      </RouterLink>
+          <Button backIcon textAppearence isNoBg class="custom-text-color back-button">
+            Back to overview
+          </Button>
+        </RouterLink>
       </div>
       <div class="card-container">
-        <Card class="house" :house="store.house" detailedCard/>
+        <Card class="house" :house="store.house" detailedCard />
         <aside>
           <h3>Recommended for you</h3>
-          <Card class="house-reccomendation" v-for="house in store.randomHouses" :key="house?.id" :house="house" mainCard/>
+          <Card class="house-reccomendation" v-for="house in store.randomHouses" :key="house?.id" :house="house"
+            mainCard />
         </aside>
       </div>
     </div>
+    <PopUp></PopUp>
   </main>
 </template>
 
@@ -51,16 +61,19 @@ main {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
   .house {
     width: 60%;
   }
-  aside{
+
+  aside {
     width: 30%;
     display: flex;
     flex-direction: column;
     gap: 20px;
   }
 }
+
 .top-main {
   margin-top: 50px;
   margin-bottom: 30px;
@@ -103,16 +116,28 @@ main {
     width: 100%;
     position: relative;
   }
-  .top-main{
+
+  .top-main {
     position: absolute;
-    top: -4%;
+    top: -3%;
+    z-index: 10;
   }
-  .card-container  {
+
+  .card-container {
     flex-direction: column;
+    align-items: flex-start;
+    .house {
+      width: 100%;
+    }
+    aside {
+      margin-top: 400px;
+      padding-left: 20px;
+      width: 90%;
+      margin-bottom: 100px;
+    }
   }
 }
 
 @media only screen and (min-width: 600px) and (max-width: 768px) {
-  
 
 }</style>

@@ -132,7 +132,7 @@ defineProps({
 
 @media only screen and (max-width: 600px) {
   .button {
-    background-color: transparent;
+    // background-color: transparent;
 
     .icon-add-desktop {
       display: none;
@@ -141,6 +141,7 @@ defineProps({
     .icon-add-mobile {
       display: block;
       height: 20px;
+      
     }
 
     .text-show {

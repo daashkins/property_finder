@@ -28,15 +28,7 @@ defineProps({
   modelValue: {
     type: [String, Number, File],
     default: ""
-  },
-  file: {
-    type: Boolean,
-    default: false
-  },
-  customImageUploadSize: {
-    type: String,
-    default: ''
-  },
+  }
 })
 </script>
 
@@ -46,7 +38,8 @@ defineProps({
 
     <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)" :required='isRequired'>
       <option class="input" value="">Select</option>
-      <option v-for="(option, index) in options" :key="index" :value="option === 'Yes' ? true : false" class="input">
+      <option v-for="(option, index) in options" :key="index" :value="option" class="input"
+        :selected="modelValue === option">
         {{ option }}
       </option>
     </select>

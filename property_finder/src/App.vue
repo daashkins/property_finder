@@ -4,6 +4,8 @@ import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import {onMounted } from 'vue'
 import { useHousesStore } from "./stores/useHousesStore.js";
+// import ModalView from './views/ModalView.vue';
+import PopUp from './components/PopUp.vue';
 const store = useHousesStore();
 
 onMounted (async () => {
@@ -16,6 +18,7 @@ onMounted (async () => {
   
   <Header/>
   <RouterView />
+  <PopUp/>
   <Footer/>
 </template>
 

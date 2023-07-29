@@ -1,5 +1,6 @@
 <script setup>
 import Button from '../components/Button.vue'
+import PopUp from '../components/PopUp.vue'
 import Search from '../components/Search.vue'
 import FilterTabs from '../components/FilterTabs.vue'
 import Card from '../components/Card.vue'
@@ -15,10 +16,10 @@ const store = useHousesStore();
       <div class="top-main">
         <h2>Houses</h2>
         <RouterLink to="/create">
-        <Button addIcon textAppearence isPrimary class="top-main-add">
-          CREATE NEW
-        </Button>
-      </RouterLink>
+          <Button addIcon textAppearence isPrimary class="top-main-add">
+            CREATE NEW
+          </Button>
+        </RouterLink>
       </div>
       <div class="search-main">
         <div class="search-container">
@@ -28,15 +29,17 @@ const store = useHousesStore();
           <FilterTabs />
         </div>
       </div>
-      <p v-if="store.searchValue  !== '' && store.searchResults >= 1" class="search-results input-title">{{ store.searchResults }} results found</p>
+      <p v-if="store.searchValue !== '' && store.searchResults >= 1" class="search-results input-title">{{
+        store.searchResults }} results found</p>
       <div class="houses">
-          <Circular v-if="store.loading"/>
-          <Card v-for="house in store.searchHouses" :key="house?.id" :house="house" class="house-card" mainCard/> 
-          <img  v-if="store.searchValue  !== '' && store.searchResults < 1" src="../assets/img_empty_houses@3x.png" alt="No houses found" >   
-          <p v-if="store.searchValue  !== '' && store.searchResults < 1" class="text"> No results found.</p>
-          <p v-if="store.searchValue  !== '' && store.searchResults < 1" class="text"> Please try another keyword.</p>   
-
+        <Circular v-if="store.loading" />
+        <Card v-for="house in store.searchHouses" :key="house?.id" :house="house" class="house-card" mainCard />
+        <img v-if="store.searchValue !== '' && store.searchResults < 1" src="../assets/img_empty_houses@3x.png"
+          alt="No houses found">
+        <p v-if="store.searchValue !== '' && store.searchResults < 1" class="text"> No results found.</p>
+        <p v-if="store.searchValue !== '' && store.searchResults < 1" class="text"> Please try another keyword.</p>
       </div>
+     
     </div>
   </main>
 </template>
@@ -78,11 +81,13 @@ main {
   .search-container {
     width: 35%;
   }
-  
+
 }
-.search-results{
-    padding-left: 20px;
-  }
+
+.search-results {
+  padding-left: 20px;
+}
+
 .houses {
   position: relative;
   min-height: 300px;
@@ -90,19 +95,21 @@ main {
   flex-direction: column;
   margin-top: 20px;
   gap: 20px;
-    // .house-card{
-    //   margin-bottom: 30px!important;
-    // }    
-      img{
-        margin-top: 100px!important;
-        margin: auto;
-        width: 30%;
-        object-fit: cover;
-      }
-      p{
-        margin: 0 auto;
-        color: $color-text-secondary;
-      }
+
+  // .house-card{
+  //   margin-bottom: 30px!important;
+  // }    
+  img {
+    margin-top: 100px !important;
+    margin: auto;
+    width: 30%;
+    object-fit: cover;
+  }
+
+  p {
+    margin: 0 auto;
+    color: $color-text-secondary;
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -114,9 +121,11 @@ main {
       width: 100%;
     }
   }
+
   .top-main {
     justify-content: center;
     position: relative;
+
     .top-main-add {
       position: absolute;
       right: 0;

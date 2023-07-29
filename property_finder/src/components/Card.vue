@@ -1,7 +1,11 @@
 <script setup>
 import Button from './Button.vue'
-import { ref } from "vue"
 import { RouterLink } from 'vue-router'
+import { useModalStore } from "../stores/useModalStore.js";
+import router from '../router/index'
+import { ref } from 'vue'
+
+const modalStore = useModalStore();
 
 defineProps({
     house: {
@@ -73,21 +77,22 @@ defineProps({
 })
 
 const hover = ref(false)
+const openModal = (id) =>  {
+    if(id) {
+        modalStore.openModal(id);
+    }
+}
 </script>
 
 <template>
-    <a class="card-link" :href="'/house/' + house?.id" @mouseover="hover = true" @mouseleave="hover = false">
-        <div :class="{ 'card-detailed': detailedCard, 'card-main': mainCard, 'card-recomendation': recomendedCard }">
+        <div :class="{ 'card-detailed': detailedCard, 'card-main': mainCard, 'card-recomendation': recomendedCard }" @click.stop="router.push(`/house/${house?.id}`)" @mouseover="hover = true" @mouseleave="hover = false">
             <img class="card-image" :src="house?.image" />
             <div class="card-content">
                 <div class="card-content-header">
                     <h3>{{ house?.location.street }} {{ house?.location.houseNumber }}</h3>
-                    <div v-if="house?.madeByMe"
-                        :class="[hover === true ? 'card-content-controls-active' : 'card-content-controls', detailedCard && 'card-content-controls-mobile']">
-                        <RouterLink :to="'/edit/' + house?.id">
-                        <Button editIcon isNoBg class="custom-button-padding"></Button>
-                    </RouterLink>
-                        <Button deleteIcon isNoBg class="custom-button-padding"></Button>
+                    <div v-if="house?.madeByMe" :class="[hover === true ? 'card-content-controls-active' : 'card-content-controls', detailedCard && 'card-content-controls-mobile']">
+                        <Button editIcon isNoBg class="custom-button-padding" @click.stop="router.push(`/edit/${house?.id}`)"></Button>
+                        <Button deleteIcon isNoBg class="custom-button-padding" @click="openModal(house.id)"></Button>
                     </div>
                 </div>
                 <div class="card-main-details" v-if="mainCard">
@@ -141,7 +146,6 @@ const hover = ref(false)
                 </div>
             </div>
         </div>
-    </a>
 </template>
 
 
@@ -266,14 +270,33 @@ const hover = ref(false)
 }
 
 @media only screen and (max-width: 600px) {
+    .card-detailed {
+        position: relative;
 
-    .card-content-controls-mobile {
+    .card-image {
+        object-fit: cover;
+    }
+    .card-content {
+        width: 100%;
         position: absolute;
-        right: 20px;
-        top: 3%;
+        z-index: 2;
+        top: 90%;
+        margin-top: 0;
+        padding: 40px 40px 40px;
+        border-top-right-radius: 30px;
+        border-top-left-radius: 30px;
+        background-color: $color-bg-2;
+   
+ 
+.card-content-controls-active {
+        position: absolute!important;
+        z-index: 10!important;
+        right: 20px!important;
+        top: 3%!important;
         display: flex;
     }
-
+}
+}
     .custom-button-padding {
         padding: 3px !important;
     }

@@ -2,14 +2,18 @@
 import Button from '../components/Button.vue'
 import Input from '../components/Input.vue'
 import { RouterLink } from 'vue-router'
-import { ref,watchEffect } from 'vue';
+import { reactive, watchEffect, ref } from 'vue';
 import { useHousesStore } from "../stores/useHousesStore.js";
+import {useVuelidate} from '@vuelidate/core';
+import {required} from '@vuelidate/validators';
 
 const store = useHousesStore();
 
 const selectOptions = ref(["Yes", "No"]);
 
-const newListing = ref({
+const hasGarage = ref(null);
+
+const newListing = reactive({
     price: null,
     bedrooms: null,
     bathrooms: null,
@@ -21,36 +25,74 @@ const newListing = ref({
     zip: "",
     city: "",
     constructionYear: null,
-    hasGarage: null,
+    hasGarage: hasGarage.value === 'Yes' ? true : false,
+    image : null,
 })
 
-const newListingImage = ref({
-    image: null,
-})
+const rules = {
+    price: {required},
+    bedrooms: {required},
+    bathrooms: {required},
+    size: {required},
+    description: {required},
+    streetName: {required},
+    houseNumber: {required},
+    numberAddition: {required},
+    zip: {required},
+    city: {required},
+    constructionYear: {required},
+    hasGarage: {required},
+    image: {required}
+}
+
+const v$ = useVuelidate(rules, newListing)
+
 const fileInput = ref(null);
 let imageData = ref(null);
 
 const chooseImage = () => {
-   fileInput.value.click()
+    fileInput.value.click()
 }
 
 const addFile = (event) => {
-    newListingImage.value.image = event.target.files[0];
+    newListing.image = event.target.files[0];
 }
 
-watchEffect(()=> {
-  if(newListingImage.value.image) {
-    const reader = new FileReader();
-  reader.onload = e => {
-  imageData.value = e.target.result
-  }
-  reader.readAsDataURL(newListingImage.value.image)
-  } 
+const clearImage = (event) => {
+    event.preventDefault();
+    imageData.value = null;
+}
+watchEffect(() => {
+    if (newListing.image) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            imageData.value = e.target.result
+        }
+        reader.readAsDataURL(newListing.image)
+    }
 })
 
-const handleSubmit = async(event) => {
-event.preventDefault();
- await store.createHouse(newListing.value, newListingImage.value.image)
+const handleSubmit = async (event) => {
+    event.preventDefault();
+    const result = await v$.value.$validate()
+    if (result) {
+    await store.createHouse(newListing)
+    newListing.price = null;
+    newListing.bedrooms = null;
+    newListing.bathrooms = null;
+    newListing.size = null;
+    newListing.description = "";
+    newListing.streetName = "";
+    newListing.houseNumber = null;
+    newListing.numberAddition = "";
+    newListing.zip = "";
+    newListing.city = "";
+    newListing.constructionYear = null;
+    newListing.image = "";
+    imageData.value = null;
+    } else  {
+        alert('no')
+    }
 }
 </script>
 
@@ -67,43 +109,48 @@ event.preventDefault();
             </div>
             <form @submit="handleSubmit">
                 <Input inputLabel='Street name' inputId="streetName" placeholder="Enter the street name"
-                    v-model="newListing.streetName" isRequired/>
+                    v-model="newListing.streetName" isRequired />
                 <div class="input-group">
                     <Input inputLabel='House number' inputId="houseNumber" placeholder="Enter house number"
-                        v-model="newListing.houseNumber" isRequired/>
+                        v-model="newListing.houseNumber" isRequired />
                     <Input inputLabel='Addition (optional)' inputId="addition" placeholder="e.g. A" :isRequired="false"
-                        v-model="newListing.houseAddition"/>
+                        v-model="newListing.houseAddition" />
                 </div>
-                <Input inputLabel='Postal code' inputId="postal" placeholder="e.g. 1000 AA"  isRequired v-model="newListing.zip" />
+                <Input inputLabel='Postal code' inputId="postal" placeholder="e.g. 1000 AA" isRequired
+                    v-model="newListing.zip" />
                 <Input inputLabel='City' inputId="city" placeholder="e.g Utrecht" isRequired v-model="newListing.city" />
                 <div class="input-upload">
                     <label class="input-title">Upload picture (PNG or JPG) <sup class="star">*</sup></label>
-                    <div class="image-input" :style="{ 'background-image': `url(${imageData})` }" @click="chooseImage">
+                    <div class="image-input" :style="{ 'background-image': `url(${imageData})` }" @click.stop="chooseImage">
+                        <div v-if="imageData" class="image-clear-button" @click.stop="clearImage">
+                            <img src="../assets/ic_clear_white@3x.png" alt="">
+                        </div>
                         <span v-if="!imageData" class="placeholder">
                             <img src="../assets/ic_upload@3x.png" alt="">
                         </span>
                         <input class="file-input" ref="fileInput" type="file" @input='addFile'>
                     </div>
                 </div>
-                <Input inputLabel='Price' inputId="price" placeholder="e.g &#8364; 150.000" v-model="newListing.price" isRequired />
+                <Input inputLabel='Price' inputId="price" placeholder="e.g &#8364; 150.000" v-model="newListing.price"
+                    isRequired />
                 <div class="input-group">
-                    <Input inputLabel='Size' inputId="size" placeholder="e.g 60m2" v-model="newListing.size" isRequired/>
+                    <Input inputLabel='Size' inputId="size" placeholder="e.g 60m2" v-model="newListing.size" isRequired />
                     <Input inputLabel='Garage' inputId="garage" placeholder="Select" select :options="selectOptions"
-                        v-model="newListing.hasGarage" isRequired/>
+                        v-model="hasGarage" isRequired />
                 </div>
                 <div class="input-group">
-                    <Input inputLabel='Bedrooms' inputId="bedrooms" placeholder="Enter amount"
-                        v-model="newListing.bedrooms" isRequired/>
+                    <Input inputLabel='Bedrooms' inputId="bedrooms" placeholder="Enter amount" v-model="newListing.bedrooms"
+                        isRequired />
                     <Input inputLabel='Bathrooms' inputId="bathrooms" placeholder="Enter amount"
-                        v-model="newListing.bathrooms" isRequired/>
+                        v-model="newListing.bathrooms" isRequired />
                 </div>
                 <Input inputLabel='Construction date' inputId="construction" placeholder="e.g. 1990"
-                    v-model="newListing.constructionYear" isRequired/>
+                    v-model="newListing.constructionYear" isRequired />
                 <Input inputLabel='Description' inputId="description" placeholder="Enter description" textarea
-                    v-model="newListing.description" isRequired/>
+                    v-model="newListing.description" isRequired />
 
 
-                <Button isBlured isSubmit isPrimary >POST</Button>
+                <Button isSubmit isPrimary >POST</Button>
             </form>
         </div>
     </main>
@@ -131,7 +178,7 @@ event.preventDefault();
 
 .top-main {
     margin-top: 50px;
-
+    padding-bottom: 30px;
 
     .custom-text-color {
         color: $color-text-primary !important;
@@ -156,6 +203,14 @@ form {
             width: 47%;
         }
     }
+    button {
+        margin-left: auto;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        width: 30%;
+        display: flex;
+        justify-content: center;
+}
 
     .input-upload {
         margin-bottom: 20px;
@@ -165,6 +220,7 @@ form {
         }
 
         .image-input {
+            position: relative;
             border-style: dashed;
             border-color: gray;
             border-width: 2px;
@@ -178,6 +234,13 @@ form {
 
             img {
                 width: 18px;
+            }
+
+            .image-clear-button {
+                position: absolute;
+                right: -11px;
+                top: -10px;
+                cursor: pointer;
             }
         }
 
@@ -221,5 +284,6 @@ form {
 
     form {
         width: 100%;
+        margin-bottom: 100px;
     }
 }</style>
