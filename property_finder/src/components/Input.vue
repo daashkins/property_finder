@@ -7,6 +7,9 @@ defineProps({
   inputId: {
     type: String
   },
+  inputType: {
+    type: String
+  },
   placeholder: {
     type: String
   },
@@ -30,7 +33,7 @@ defineProps({
     default: false
   },
   modelValue: {
-    type: [String, Number, File],
+    type: [String, Number, File, Boolean],
     default: ""
   }
 })
@@ -42,16 +45,16 @@ defineProps({
     
     <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)" :class="error && 'input-error'">
       <option class="input" value="">Select</option>
-      <option v-for="(option, index) in options" :key="index" :value="option" class="input"
-        :selected="modelValue === option">
-        {{ option }}
+      <option v-for="(option, index) in options" :key="index" :value="option.value" class="input"
+        :selected="modelValue === option.value">
+        {{ option.label }}
       </option>
     </select>
 
     <textarea v-else-if="textarea" :id="inputId" rows="4" cols="50" :placeholder="placeholder" class="input" :class="error && 'input-error'"
       :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" ></textarea>
 
-    <input v-else type="text" :id="inputId" :placeholder="placeholder"  class="input" :class="error && 'input-error'"
+    <input v-else :type="inputType" :id="inputId" :placeholder="placeholder"  class="input" :class="error && 'input-error'"
       :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
 
   </div>

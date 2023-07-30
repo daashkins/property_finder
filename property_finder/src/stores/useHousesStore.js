@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import router from '../router/index'
 
+const API_KEY = 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+
 export const useHousesStore = defineStore('houses', {
   state: () => ({
     houses: [],
@@ -16,10 +18,10 @@ export const useHousesStore = defineStore('houses', {
   getters: {
     randomHouses() {
       const getRandom = (min, max) => Math.floor(Math.random() * (max - min) + min)
-      let random =  [
-        this.houses[getRandom(0, this.houses.length-1)],
-        this.houses[getRandom(0, this.houses.length-1)],
-        this.houses[getRandom(0, this.houses.length-1)]
+      let random = [
+        this.houses[getRandom(0, this.houses.length - 1)],
+        this.houses[getRandom(0, this.houses.length - 1)],
+        this.houses[getRandom(0, this.houses.length - 1)]
       ]
       return random
     },
@@ -55,7 +57,7 @@ export const useHousesStore = defineStore('houses', {
           method: 'get',
           url: 'https://api.intern.d-tt.nl/api/houses',
           headers: {
-            'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+            'X-Api-Key': API_KEY
           }
         }).then((response) => {
           return response.data
@@ -74,7 +76,7 @@ export const useHousesStore = defineStore('houses', {
           method: 'get',
           url: `https://api.intern.d-tt.nl/api/houses/${parseInt(id)}`,
           headers: {
-            'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+            'X-Api-Key': API_KEY
           }
         }).then((response) => {
           return response.data[0]
@@ -91,29 +93,29 @@ export const useHousesStore = defineStore('houses', {
       const fd = new FormData()
       fd.append('image', newListing.image, newListing.image.name)
       // eslint-disable-next-line no-unused-vars
-      const { image, ...house } = newListing;
+      const { image, ...house } = newListing
       try {
         const result = await axios({
           method: 'post',
           url: `https://api.intern.d-tt.nl/api/houses`,
           data: { ...house },
           headers: {
-            'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+            'X-Api-Key': API_KEY
           }
         }).then((response) => {
-          console.log(response.data, "main")
+          console.log(response.data, 'main')
           return response.data
         })
-      await axios({
-        method: 'post',
-        url: `https://api.intern.d-tt.nl/api/houses/${result.id}/upload`,
-        data: fd,
-        headers: {
-          'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
-        }
-      })
-        this.houses.push(result);
-        await this.getHouses();
+        await axios({
+          method: 'post',
+          url: `https://api.intern.d-tt.nl/api/houses/${result.id}/upload`,
+          data: fd,
+          headers: {
+            'X-Api-Key': API_KEY
+          }
+        })
+        this.houses.push(result)
+        await this.getHouses()
         router.push(`/house/${result.id}`)
       } catch (error) {
         console.log(error)
@@ -131,7 +133,7 @@ export const useHousesStore = defineStore('houses', {
           url: `https://api.intern.d-tt.nl/api/houses/${parseInt(id)}`,
           data: { ...listingUpdate },
           headers: {
-            'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+            'X-Api-Key': API_KEY
           }
         })
         await axios({
@@ -139,27 +141,27 @@ export const useHousesStore = defineStore('houses', {
           url: `https://api.intern.d-tt.nl/api/houses/${parseInt(id)}/upload`,
           data: fd,
           headers: {
-            'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+            'X-Api-Key': API_KEY
           }
         })
-        this.houses.map(house => {
-          if(house.id === parseInt(id)) {
-            house.price = listingUpdate.price,
-            house.rooms.bedrooms = listingUpdate.bedrooms,
-            house.rooms.bathrooms= listingUpdate.bathrooms,
-            house.size =  listingUpdate.size,
-            house.description= listingUpdate.description,
-            house.location.streetName= listingUpdate.streetName,
-            house.location.houseNumber= listingUpdate.houseNumber,
-            house.location.numberAddition= listingUpdate.numberAddition,
-            house.location.zip= listingUpdate.zip,
-            house.location.city= listingUpdate.city,
-            house.constructionYear= listingUpdate.constructionYear,
-            house.hasGarage = listingUpdate.hasGarage
+        this.houses.map((house) => {
+          if (house.id === parseInt(id)) {
+            ;(house.price = listingUpdate.price),
+              (house.rooms.bedrooms = listingUpdate.bedrooms),
+              (house.rooms.bathrooms = listingUpdate.bathrooms),
+              (house.size = listingUpdate.size),
+              (house.description = listingUpdate.description),
+              (house.location.streetName = listingUpdate.streetName),
+              (house.location.houseNumber = listingUpdate.houseNumber),
+              (house.location.numberAddition = listingUpdate.numberAddition),
+              (house.location.zip = listingUpdate.zip),
+              (house.location.city = listingUpdate.city),
+              (house.constructionYear = listingUpdate.constructionYear),
+              (house.hasGarage = listingUpdate.hasGarage)
           }
         })
 
-        await this.getHouses();
+        await this.getHouses()
         router.push(`/house/${parseInt(id)}`)
       } catch (error) {
         console.log(error)
@@ -173,19 +175,18 @@ export const useHousesStore = defineStore('houses', {
           method: 'delete',
           url: `https://api.intern.d-tt.nl/api/houses/${parseInt(id)}`,
           headers: {
-            'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+            'X-Api-Key': API_KEY
           }
         })
         this.houses = this.houses.filter((object) => {
           return object.id !== id
         })
-      }catch (error) {
+      } catch (error) {
         console.log(error)
       } finally {
         this.loading = false
       }
-     
     }
-  }, 
-  persist: true,
+  },
+  persist: true
 })

@@ -15,7 +15,7 @@ const store = useHousesStore();
     <div class="container">
       <div class="top-main">
         <h2>Houses</h2>
-        <Button text="CREATE NEW" textAppearence isPrimary class="top-main-add" @click="router.push('/create')">
+        <Button text="CREATE NEW" textAppearence isPrimary class="top-main-add" @click="router.push('/house/create')">
           <img class="icon-add-desktop" src="../assets/ic_plus_white@3x.png" alt="Plus">
           <img class="icon-add-mobile" src="../assets/ic_plus_grey@3x.png" alt="Plus">
         </Button>

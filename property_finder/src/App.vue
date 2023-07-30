@@ -10,7 +10,6 @@ const store = useHousesStore();
 onMounted(async () => {
   await store.getHouses();
 })
-
 </script>
 
 <template>
@@ -23,8 +22,4 @@ onMounted(async () => {
 <style lang="scss">
 @import "./scss/_variables.scss";
 @import "./scss/main.scss"
-
-//  .your-component {
-//    color: $color-text-primary;
-//  }
 </style>

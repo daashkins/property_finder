@@ -15,10 +15,12 @@ watchEffect(() => {
 <template>
     <header>
         <div class="container">
-            <img class="logo" src="../assets/img_logo_dtt@3x.png" alt="Logo">
+            <RouterLink to="/">
+                <img class="logo" src="../assets/img_logo_dtt@3x.png" alt="Logo">
+            </RouterLink>
             <ul class="navigation">
                 <li class="menu">
-                    <RouterLink to="/" :class="currentURL.includes('house') || currentURL === '/' || currentURL === '/create' ? 'exact-active-link': '' ">Houses</RouterLink>
+                    <RouterLink to="/" :class="currentURL.includes('house') || currentURL === '/' || currentURL === '/house/create' ? 'exact-active-link': '' ">Houses</RouterLink>
                 </li>
                 <li class="menu">
                     <RouterLink to="/about" :class="currentURL.includes('/about') && 'exact-active-link'">About</RouterLink>

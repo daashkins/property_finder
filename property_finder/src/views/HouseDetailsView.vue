@@ -2,8 +2,9 @@
 import Button from '../components/Button.vue'
 import PopUp from '../components/PopUp.vue'
 import Card from '../components/Card.vue'
-import { useRoute } from "vue-router";
+import Circular from '../components/Circular.vue'
 import router from '../router/index'
+import { useRoute } from "vue-router";
 import { onMounted, watchEffect } from 'vue'
 import { useHousesStore } from "../stores/useHousesStore.js";
 
@@ -39,9 +40,11 @@ watchEffect(async () => {
         </Button>
       </div>
       <div class="card-container">
+        <Circular v-if="store.loading" />
         <Card class="house" :house="store.house" detailedCard />
         <aside>
           <h3>Recommended for you</h3>
+          <Circular v-if="store.loading" />
           <Card class="house-reccomendation" v-for="house in store.randomHouses" :key="house?.id" :house="house"
             recomendedCard />
         </aside>

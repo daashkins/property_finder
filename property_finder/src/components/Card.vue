@@ -2,9 +2,7 @@
 import Button from './Button.vue'
 import { useModalStore } from "../stores/useModalStore.js";
 import router from '../router/index'
-import { ref } from 'vue'
-
-const modalStore = useModalStore();
+import { ref} from 'vue'
 
 defineProps({
     house: {
@@ -75,19 +73,23 @@ defineProps({
     }
 })
 
+const modalStore = useModalStore();
+
 const hover = ref(false)
+
 const openModal = (id) => {
     if (id) {
         modalStore.openModal(id);
     }
 }
+
 </script>
 
 <template>
     <div :class="{ 'card-detailed': detailedCard, 'card-main': mainCard, 'card-recomended': recomendedCard }"
-        @click.stop="router.push(`/house/${house?.id}`)"  @mouseover="hover = true" @mouseleave="hover = false">
+        @click.stop="router.push(`/house/${house?.id}`)" @mouseover="hover = true" @mouseleave="hover = false">
         <img class="card-image" v-if="house?.image !== null" :src="house?.image" />
-        <img class="card-image" v-if="house?.image === null" src="../assets/img_placeholder_house@3x.png"/>
+        <img class="card-image" v-if="house?.image === null" src="../assets/img_placeholder_house@3x.png" />
         <div v-if="house?.madeByMe && detailedCard"
             :class="['card-content-controls-mobile-active', 'card-content-mobile-controls', 'card-content-controls-mobile']">
             <Button class="custom-button-padding" @click.stop="router.push(`/house/edit/${house?.id}`)">
@@ -104,9 +106,8 @@ const openModal = (id) => {
             <div class="card-content-header">
                 <h3 v-if="detailedCard || mainCard">{{ house?.location.street }} {{ house?.location.houseNumber }}</h3>
                 <h4 v-if="recomendedCard">{{ house?.location.street }} {{ house?.location.houseNumber }}</h4>
-
                 <div v-if="house?.madeByMe && mainCard"
-                    :class="[hover === true  ? 'card-content-controls-active' : 'card-content-controls']">
+                    :class="[hover === true ? 'card-content-controls-active' : 'card-content-controls']">
                     <Button class="custom-button-padding" @click.stop="router.push(`/house/edit/${house?.id}`)">
                         <img class="icon-edit-dark" src="../assets/ic_edit@3x.png" alt="Edit">
                         <img v-if="detailedCard" class="icon-edit-light" src="../assets/ic_edit_white@3x.png" alt="Edit">
@@ -221,6 +222,7 @@ const openModal = (id) => {
     .card-content {
         flex-grow: 1;
 
+      
         .card-content-header {
             display: flex;
             flex-direction: row;
@@ -228,7 +230,12 @@ const openModal = (id) => {
             width: auto;
             justify-content: space-between;
         }
-
+        // .card-main-details {  
+        //     position: relative;
+        //     display: flex;
+        //     flex-direction: column;
+        //     height: 100%;
+        // }
         .dimensions {
             display: flex;
             flex-direction: row;
@@ -501,7 +508,6 @@ const openModal = (id) => {
 
     .card-recomended {
 
-        // align-items: flex-start;
         .card-image {
             width: 30%;
             height: auto;

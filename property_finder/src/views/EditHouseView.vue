@@ -6,19 +6,19 @@ import { ref, watchEffect, onMounted, reactive } from 'vue';
 import { useHousesStore } from "../stores/useHousesStore.js";
 import { useRoute } from "vue-router";
 import { useVuelidate } from '@vuelidate/core';
-import { required } from '@vuelidate/validators';
+import { required, numeric } from '@vuelidate/validators';
 
 const route = useRoute();
 const store = useHousesStore();
 const buttonActive = ref(false);
-
+const selectOptions = ref([
+    {label:"Yes", value: true}, 
+    {label:"No", value: false}]
+);
 
 onMounted(async () => {
     await store.getHouseById(route.params.id);
 })
-
-const selectOptions = ref(["Yes", "No"]);
-const hasGarage = ref(store.house?.hasGarage === true ? 'Yes' : 'No');
 
 const updatedListing = reactive({
     price: store.house?.price,
@@ -32,7 +32,7 @@ const updatedListing = reactive({
     zip: store.house?.location.zip,
     city: store.house?.location.city,
     constructionYear: store.house?.constructionYear,
-    hasGarage: hasGarage.value === 'Yes' ? true : false,
+    hasGarage: store.house?.hasGarage,
 })
 
 const newImage = reactive({
@@ -41,32 +41,37 @@ const newImage = reactive({
 const fileInput = ref(null);
 let imageData = ref(store.house?.image);
 
+
+
 const chooseImage = () => {
     fileInput.value.click()
 }
 
-const addFile = (event) => {
+const addImage = (event) => {
     newImage.image = event.target.files[0];
 }
 
+const clearImage = (event) => {
+    event.preventDefault();
+    imageData.value = null;
+}
+
 const rules = {
-    price: { required },
-    bedrooms: { required },
-    bathrooms: { required },
-    size: { required },
+    price: { required, numeric },
+    bedrooms: { required, numeric},
+    bathrooms: { required, numeric },
+    size: { required, numeric },
     description: { required },
     streetName: { required },
-    houseNumber: { required },
+    houseNumber: { required, numeric },
     zip: { required },
     city: { required },
-    constructionYear: { required },
+    constructionYear: { required, numeric},
     hasGarage: { required },
 }
-const rulesForSelect = { required }
 const rulesForImage = {required}
 
 const v$ = useVuelidate(rules, updatedListing)
-const f$ = useVuelidate(rulesForSelect, hasGarage)
 const g$ = useVuelidate(rulesForImage, imageData)
 
 watchEffect(() => {
@@ -79,10 +84,7 @@ watchEffect(() => {
     }
 })
 
-const clearImage = (event) => {
-    event.preventDefault();
-    imageData.value = null;
-}
+
 
 watchEffect(() => {
     if (updatedListing.price !== null &&
@@ -97,8 +99,8 @@ watchEffect(() => {
         updatedListing.constructionYear !== null &&
         updatedListing.image !== null&&
         imageData.value !== "" &&
-        imageData.value !== null &&
-        hasGarage.value !== null ) {
+        imageData.value !== null 
+        ) {
         buttonActive.value = true
     } else {
         buttonActive.value = false;
@@ -108,9 +110,8 @@ watchEffect(() => {
 const handleSubmit = async (event) => {
     event.preventDefault();
     const result = await v$.value.$validate()
-    const resultGarage = await f$.value.$validate()
     const resultImage = await g$.value.$validate()
-    if (result && resultGarage && resultImage) {
+    if (result && resultImage) {
         await store.updateHouseById(route.params.id, updatedListing, newImage.image);
     }
 }
@@ -128,28 +129,28 @@ const handleSubmit = async (event) => {
                 <h2>Edit listing</h2>
             </div>
             <form @submit="handleSubmit">
-                <Input inputLabel='Street name' inputId="streetName" placeholder="Enter the street name" 
+                <Input inputLabel='Street name' inputId="streetName" inputType="text" placeholder="Enter the street name" 
                     v-model="updatedListing.streetName" :error="v$.streetName.$errors.length >=1 ? true : false" isRequired/>
                 <span class="error-message error" v-for="error in v$.streetName.$errors" :key="error.$uid">
                     Required field missing </span>
                 <div class="input-group">
                     <div>
-                        <Input inputLabel='House number' inputId="houseNumber" placeholder="Enter house number"
+                        <Input inputLabel='House number' inputId="houseNumber"  placeholder="Enter house number"
                             v-model="updatedListing.houseNumber" :error="v$.houseNumber.$errors.length >=1 ? true : false" isRequired/>
                         <span class="error-message error" v-for="error in v$.houseNumber.$errors" :key="error.$uid">
                             Required field missing </span>
                     </div>
                     <div>
-                        <Input inputLabel='Addition (optional)' inputId="addition" placeholder="e.g. A" :isRequired="false"
+                        <Input inputLabel='Addition (optional)' inputId="addition" inputType="text" placeholder="e.g. A" :isRequired="false"
                             v-model="updatedListing.houseAddition" />
                     </div>
                 </div>
 
-                <Input inputLabel='Postal code' inputId="postal" placeholder="e.g. 1000 AA" v-model="updatedListing.zip" :error="v$.zip.$errors.length >=1 ? true : false" isRequired/>
+                <Input inputLabel='Postal code' inputId="postal" inputType="text" placeholder="e.g. 1000 AA" v-model="updatedListing.zip" :error="v$.zip.$errors.length >=1 ? true : false" isRequired/>
                 <span class="error-message error" v-for="error in v$.zip.$errors" :key="error.$uid">
                     Required field missing </span>
 
-                <Input inputLabel='City' inputId="city" placeholder="e.g Utrecht" v-model="updatedListing.city" :error="v$.city.$errors.length >=1 ? true : false" isRequired/>
+                <Input inputLabel='City' inputId="city" inputType="text" placeholder="e.g Utrecht" v-model="updatedListing.city" :error="v$.city.$errors.length >=1 ? true : false" isRequired/>
                 <span class="error-message error" v-for="error in v$.city.$errors" :key="error.$uid">
                     Required field missing </span>
 
@@ -163,47 +164,47 @@ const handleSubmit = async (event) => {
                         <span v-if="!imageData" class="placeholder">
                             <img src="../assets/ic_upload@3x.png" alt="">
                         </span>
-                        <input class="file-input" ref="fileInput" type="file" @input='addFile'>
+                        <input class="file-input" ref="fileInput" type="file" @input='addImage'>
                     </div>
                     <span class="error-message error" v-for="error in g$.$errors" :key="error.$uid">
                         Required field missing </span>
                 </div>
-                <Input inputLabel='Price' inputId="price" placeholder="e.g &#8364; 150.000" v-model="updatedListing.price" :error="v$.price.$errors.length >=1 ? true : false" isRequired/>
+                <Input inputLabel='Price' inputId="price" inputType="text" placeholder="e.g &#8364; 150.000" v-model="updatedListing.price" :error="v$.price.$errors.length >=1 ? true : false" isRequired/>
                 <span class="error-message error" v-for="error in v$.price.$errors" :key="error.$uid">
                     Required field missing</span>
                 <div class="input-group">
                     <div>
-                        <Input inputLabel='Size' inputId="size" placeholder="e.g 60m2" v-model="updatedListing.size" :error="v$.size.$errors.length >=1 ? true : false" isRequired/>
+                        <Input inputLabel='Size' inputId="size" inputType="text" placeholder="e.g 60m2" v-model="updatedListing.size" :error="v$.size.$errors.length >=1 ? true : false" isRequired/>
                         <span class="error-message error" v-for="error in v$.size.$errors" :key="error.$uid">
                             Required field missing</span>
                     </div>
                     <div>
                         <Input inputLabel='Garage' inputId="garage" placeholder="Select" select :options="selectOptions"
-                            v-model="hasGarage" :error="f$.$errors.length >=1 ? true : false" isRequired/>
-                        <span class="error-message error" v-for="error in f$.$errors" :key="error.$uid">
+                            v-model="updatedListing.hasGarage" :error="v$.hasGarage.$errors.length >=1 ? true : false" isRequired/>
+                        <span class="error-message error" v-for="error in v$.hasGarage.$errors" :key="error.$uid">
                             Required field missing</span>
                     </div>
 
                 </div>
                 <div class="input-group">
                     <div>
-                        <Input inputLabel='Bedrooms' inputId="bedrooms" placeholder="Enter amount"
+                        <Input inputLabel='Bedrooms' inputId="bedrooms" inputType="number" placeholder="Enter amount"
                             v-model="updatedListing.bedrooms" :error="v$.bedrooms.$errors.length >=1 ? true : false" isRequired/>
                         <span class="error-message error" v-for="error in v$.bedrooms.$errors" :key="error.$uid">
                             Required field missing</span>
                     </div>
                     <div>
-                        <Input inputLabel='Bathrooms' inputId="bathrooms" placeholder="Enter amount"
+                        <Input inputLabel='Bathrooms' inputId="bathrooms" inputType="number" placeholder="Enter amount"
                             v-model="updatedListing.bathrooms" :error="v$.bathrooms.$errors.length >=1 ? true : false" isRequired/>
                         <span class="error-message error" v-for="error in v$.bathrooms.$errors" :key="error.$uid">
                             Required field missing</span>
                     </div>
                 </div>
-                <Input inputLabel='Construction date' inputId="construction" placeholder="e.g. 1990"
+                <Input inputLabel='Construction date' inputId="construction" inputType="number" placeholder="e.g. 1990"
                     v-model="updatedListing.constructionYear" :error="v$.constructionYear.$errors.length >=1 ? true : false" isRequired/>
                 <span class="error-message error" v-for="error in v$.constructionYear.$errors" :key="error.$uid">
                     Required field missing</span>
-                <Input inputLabel='Description' inputId="description" placeholder="Enter description" textarea
+                <Input inputLabel='Description' inputId="description" inputType="text" placeholder="Enter description" textarea
                     v-model="updatedListing.description" :error="v$.description.$errors.length >=1 ? true : false" isRequired/>
                 <span class="error-message error" v-for="error in v$.description.$errors" :key="error.$uid">
                     Required field missing {{  v$.description.$errors.length >=1 }}</span>
