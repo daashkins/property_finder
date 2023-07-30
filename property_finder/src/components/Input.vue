@@ -1,5 +1,7 @@
 <script setup>
 
+// Defining props base for the purpose of input (textarea, select, input), input type and modelValue.
+
 defineProps({
   inputLabel: {
     type: String
@@ -37,13 +39,15 @@ defineProps({
     default: ""
   }
 })
+
 </script>
 
 <template>
   <div class="input-container">
     <label :for="inputId" class="input-title">{{ inputLabel }} <sup v-if="isRequired" class="star">*</sup></label>
-    
-    <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)" :class="error && 'input-error'">
+
+    <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)"
+      :class="error && 'input-error'">
       <option class="input" value="">Select</option>
       <option v-for="(option, index) in options" :key="index" :value="option.value" class="input"
         :selected="modelValue === option.value">
@@ -51,10 +55,11 @@ defineProps({
       </option>
     </select>
 
-    <textarea v-else-if="textarea" :id="inputId" rows="4" cols="50" :placeholder="placeholder" class="input" :class="error && 'input-error'"
-      :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" ></textarea>
+    <textarea v-else-if="textarea" :id="inputId" rows="4" cols="50" :placeholder="placeholder" class="input"
+      :class="error && 'input-error'" :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"></textarea>
 
-    <input v-else :type="inputType" :id="inputId" :placeholder="placeholder"  class="input" :class="error && 'input-error'"
+    <input v-else :type="inputType" :id="inputId" :placeholder="placeholder" class="input" :class="error && 'input-error'"
       :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
 
   </div>
@@ -89,10 +94,10 @@ defineProps({
   .input:focus {
     outline: none;
     border: none;
-  } 
+  }
+
   input:focus,
-  select:focus
-   {
+  select:focus {
     outline: none;
     border: none;
   }
@@ -123,11 +128,11 @@ defineProps({
 
 @media only screen and (max-width: 600px) {
   .input-container {
+
     select,
     option {
       font-size: 12px;
     }
   }
 
-}
-</style>
+}</style>

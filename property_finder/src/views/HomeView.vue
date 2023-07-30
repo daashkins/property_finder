@@ -8,6 +8,7 @@ import { useHousesStore } from "../stores/useHousesStore.js";
 import router from '../router/index'
 
 const store = useHousesStore();
+
 </script>
 
 <template>

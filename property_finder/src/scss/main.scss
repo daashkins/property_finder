@@ -10,9 +10,6 @@ html {
     height: 100%;
     background-color: v.$color-bg-1;
   }
-// body {
-//     height: 100%;
-// }
 
 #app{
     display: flex;
@@ -92,7 +89,6 @@ button, .menu, .text {
         font-size: 12px;
     }
   }
-
 
 @media only screen and (max-width: 1200px) and (min-width: 768px) {
     .container {

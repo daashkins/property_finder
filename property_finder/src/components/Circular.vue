@@ -11,7 +11,6 @@
 </template>
 
 
-
 <style lang="scss" scoped>
 $green: #008744;
 $blue: #0057e7;
@@ -90,4 +89,5 @@ $width: 100px;
     90% {
         stroke: $yellow;
     }
-}</style>
+}
+</style>

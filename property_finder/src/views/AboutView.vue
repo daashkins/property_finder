@@ -88,4 +88,5 @@
   .about-footer-main {
     margin-bottom: 100px !important;
   }
-}</style>
+}
+</style>

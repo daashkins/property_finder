@@ -11,23 +11,24 @@ import { useHousesStore } from "../stores/useHousesStore.js";
 const store = useHousesStore();
 const route = useRoute();
 
+//Fuction to get data about the house 
 onMounted(async () => {
   await store.getHouseById(route.params.id);
 })
 
+//Fuction to get data about the house on change of params in url
 watchEffect(async () => {
   if (parseInt(route.params.id) !== store.house?.id) {
     await store.getHouseById(route.params.id);
   }
 })
 
+//Function if image is not loaded, to get request 
 watchEffect(async () => {
   if (!store.house?.image) {
     await store.getHouseById(route.params.id);
   }
 })
-
-
 </script>
 
 <template>

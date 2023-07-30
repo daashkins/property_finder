@@ -7,6 +7,7 @@ import { useHousesStore } from "../stores/useHousesStore.js";
 const houseStore = useHousesStore();
 const modalStore = useModalStore();
 
+//Function to make a delete request and update state in store
 const handleDelete = async (id) => {
     await houseStore.deleteHouse(id);
     modalStore.closeModal();
@@ -67,7 +68,7 @@ const handleDelete = async (id) => {
     display: flex;
     flex-direction: column;
     align-items: center;
-justify-content: space-between;
+    justify-content: space-between;
 
     h3 {
         margin-bottom: 20px;
@@ -102,15 +103,15 @@ justify-content: space-between;
 }
 
 @media only screen and (max-width: 600px) {
-    .modal-container{
-    width: 90%;
-    padding: 35px;
-   }
+    .modal-container {
+        width: 90%;
+        padding: 35px;
+    }
 }
 
 @media only screen and (max-width: 1200px) and (min-width: 600px) {
-   .modal-container{
-    width: 50%;
-   }
+    .modal-container {
+        width: 50%;
+    }
 }
 </style>

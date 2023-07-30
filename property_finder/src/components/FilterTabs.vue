@@ -2,6 +2,7 @@
 import { useHousesStore } from "../stores/useHousesStore.js";
 const store = useHousesStore();
 
+//Fucntion to set up a filter value in store 
 const filterHouses = (event) => {
   event.preventDefault();
   store.filter = event.target.value;

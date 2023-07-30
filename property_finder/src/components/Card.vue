@@ -2,7 +2,7 @@
 import Button from './Button.vue'
 import { useModalStore } from "../stores/useModalStore.js";
 import router from '../router/index'
-import { ref} from 'vue'
+import { ref } from 'vue'
 
 defineProps({
     house: {
@@ -73,10 +73,12 @@ defineProps({
     }
 })
 
-const modalStore = useModalStore();
 
+//Reference to local variable, based on which Edit and Delete icons are shown
 const hover = ref(false)
 
+//Function to call pop up window
+const modalStore = useModalStore();
 const openModal = (id) => {
     if (id) {
         modalStore.openModal(id);
@@ -90,6 +92,7 @@ const openModal = (id) => {
         @click.stop="router.push(`/house/${house?.id}`)" @mouseover="hover = true" @mouseleave="hover = false">
         <img class="card-image" v-if="house?.image !== null" :src="house?.image" />
         <img class="card-image" v-if="house?.image === null" src="../assets/img_placeholder_house@3x.png" />
+
         <div v-if="house?.madeByMe && detailedCard"
             :class="['card-content-controls-mobile-active', 'card-content-mobile-controls', 'card-content-controls-mobile']">
             <Button class="custom-button-padding" @click.stop="router.push(`/house/edit/${house?.id}`)">
@@ -101,11 +104,12 @@ const openModal = (id) => {
                 <img v-if="detailedCard" class="icon-delete-light" src="../assets/ic_delete_white@3x.png" alt="Delete">
             </Button>
         </div>
-
+    
         <div class="card-content">
             <div class="card-content-header">
                 <h3 v-if="detailedCard || mainCard">{{ house?.location.street }} {{ house?.location.houseNumber }}</h3>
                 <h4 v-if="recomendedCard">{{ house?.location.street }} {{ house?.location.houseNumber }}</h4>
+
                 <div v-if="house?.madeByMe && mainCard"
                     :class="[hover === true ? 'card-content-controls-active' : 'card-content-controls']">
                     <Button class="custom-button-padding" @click.stop="router.push(`/house/edit/${house?.id}`)">
@@ -118,6 +122,7 @@ const openModal = (id) => {
                             alt="Delete">
                     </Button>
                 </div>
+                
                 <div v-else-if="house?.madeByMe && detailedCard"
                     :class="[hover === true ? 'card-content-controls-active' : 'card-content-controls']">
                     <Button class="custom-button-padding" @click.stop="router.push(`/house/edit/${house?.id}`)">
@@ -222,7 +227,7 @@ const openModal = (id) => {
     .card-content {
         flex-grow: 1;
 
-      
+
         .card-content-header {
             display: flex;
             flex-direction: row;
@@ -230,6 +235,7 @@ const openModal = (id) => {
             width: auto;
             justify-content: space-between;
         }
+
         // .card-main-details {  
         //     position: relative;
         //     display: flex;

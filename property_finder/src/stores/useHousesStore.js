@@ -16,6 +16,7 @@ export const useHousesStore = defineStore('houses', {
     error: null
   }),
   getters: {
+    //Functiom to give recommendations
     randomHouses() {
       const getRandom = (min, max) => Math.floor(Math.random() * (max - min) + min)
       let random = [
@@ -25,6 +26,7 @@ export const useHousesStore = defineStore('houses', {
       ]
       return random
     },
+    //Function to filter houses based on price or size
     filterHouses() {
       return (data) =>
         this.filter === 'Price'
@@ -35,6 +37,7 @@ export const useHousesStore = defineStore('houses', {
               return b.size - a.size
             })
     },
+    //Function to show searched card with possibility to filter them
     searchHouses() {
       const searchResults = this.houses.filter((house) =>
         house.location.street.toLowerCase().includes(this.searchValue.toLowerCase())
@@ -42,6 +45,7 @@ export const useHousesStore = defineStore('houses', {
       this.searchResults = searchResults.length
       return this.filterHouses(searchResults)
     },
+    //Function to get house by Id from state without doing API request
     getHouseForEditById() {
       return (id) => {
         const currentHouse = this.houses.find((house) => house.id === parseInt(id))
@@ -50,6 +54,7 @@ export const useHousesStore = defineStore('houses', {
     }
   },
   actions: {
+    //Function to get houses from backend
     async getHouses() {
       this.loading = true
       try {
@@ -69,6 +74,7 @@ export const useHousesStore = defineStore('houses', {
         this.loading = false
       }
     },
+    //Function to get house by Id from backend
     async getHouseById(id) {
       this.loading = true
       try {
@@ -88,6 +94,7 @@ export const useHousesStore = defineStore('houses', {
         this.loading = false
       }
     },
+    //Function to create house, by doing two requests (create house and upload picture)
     async createHouse(newListing) {
       this.loading = true
       const fd = new FormData()
@@ -123,6 +130,7 @@ export const useHousesStore = defineStore('houses', {
         this.loading = false
       }
     },
+    //Function to update house, by doing two requests (update house and upload updated picture)
     async updateHouseById(id, listingUpdate, image) {
       this.loading = true
       const fd = new FormData()
@@ -169,6 +177,7 @@ export const useHousesStore = defineStore('houses', {
         this.loading = false
       }
     },
+    //Function to delete house
     async deleteHouse(id) {
       try {
         await axios({

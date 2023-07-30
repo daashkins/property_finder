@@ -6,18 +6,20 @@ const store = useHousesStore();
 const searchValue = ref('');
 const toShow = ref(false)
 
+//Function to store search query in store
 const handleSearch = (event) => {
     event.preventDefault();
     searchValue.value = event.target.value;
     store.searchValue = event.target.value;
     toShow.value = true;
-
 }
 
+//Function to show on focus clear button for search
 const handleFocus = () => {
     toShow.value = true;
 }
 
+//Function to clear search value
 const handleClear = () => {
     searchValue.value = "";
     store.searchValue = "";
@@ -31,7 +33,7 @@ const handleClear = () => {
         <input class="search-input" v-model="searchValue" type="text" placeholder="Search for a house"
             @change="handleSearch" @focus="handleFocus">
         <button class="search-clear-button" :class="toShow && 'search-clear-button-active'" @click="handleClear">
-            <img src="../assets/ic_clear@3x.png" alt="">
+            <img src="../assets/ic_clear@3x.png" alt="Clear">
         </button>
     </div>
 </template>

@@ -6,6 +6,7 @@ import { useRoute } from "vue-router";
 let currentURL = ref(null)
 const route = useRoute();
 
+//Hook to watch changes in url 
 watchEffect(() => {
     currentURL.value = route.fullPath
 })

@@ -1,22 +1,23 @@
 <script setup>
 import { ref, watchEffect } from 'vue';
 import { RouterLink } from 'vue-router';
-// import { watch } from "vue";
 import { useRoute } from "vue-router";
 
+//Condition of rendering of icons
 let activeHome = ref(true);
 let activeInfo = ref(false);
 
 const route = useRoute();
 
+//Hook to watch changes in the url
 watchEffect(() => {
-if (route.fullPath === '/about'){
-    activeInfo.value = true;
-    activeHome.value = false;
-} else {
-    activeInfo.value = false;
-    activeHome.value = true;
-}
+    if (route.fullPath === '/about') {
+        activeInfo.value = true;
+        activeHome.value = false;
+    } else {
+        activeInfo.value = false;
+        activeHome.value = true;
+    }
 })
 </script>
 
