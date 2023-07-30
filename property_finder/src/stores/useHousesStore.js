@@ -16,11 +16,12 @@ export const useHousesStore = defineStore('houses', {
   getters: {
     randomHouses() {
       const getRandom = (min, max) => Math.floor(Math.random() * (max - min) + min)
-      return [
-        this.houses[getRandom(0, this.houses.length)],
-        this.houses[getRandom(0, this.houses.length)],
-        this.houses[getRandom(0, this.houses.length)]
+      let random =  [
+        this.houses[getRandom(0, this.houses.length-1)],
+        this.houses[getRandom(0, this.houses.length-1)],
+        this.houses[getRandom(0, this.houses.length-1)]
       ]
+      return random
     },
     filterHouses() {
       return (data) =>
@@ -89,8 +90,8 @@ export const useHousesStore = defineStore('houses', {
       this.loading = true
       const fd = new FormData()
       fd.append('image', newListing.image, newListing.image.name)
+      // eslint-disable-next-line no-unused-vars
       const { image, ...house } = newListing;
-      console.log(house);
       try {
         const result = await axios({
           method: 'post',
@@ -100,17 +101,20 @@ export const useHousesStore = defineStore('houses', {
             'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
           }
         }).then((response) => {
-          axios({
-            method: 'post',
-            url: `https://api.intern.d-tt.nl/api/houses/${response.data.id}/upload`,
-            data: fd,
-            headers: {
-              'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
-            }
-          })
+          console.log(response.data, "main")
           return response.data
         })
-        this.houses = this.houses.push(result)
+      await axios({
+        method: 'post',
+        url: `https://api.intern.d-tt.nl/api/houses/${result.id}/upload`,
+        data: fd,
+        headers: {
+          'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
+        }
+      })
+        this.houses.push(result);
+        await this.getHouses();
+        router.push(`/house/${result.id}`)
       } catch (error) {
         console.log(error)
       } finally {
@@ -120,7 +124,7 @@ export const useHousesStore = defineStore('houses', {
     async updateHouseById(id, listingUpdate, image) {
       this.loading = true
       const fd = new FormData()
-      fd.append('image', image, image.name)
+      fd.append('image', image)
       try {
         await axios({
           method: 'post',
@@ -138,6 +142,25 @@ export const useHousesStore = defineStore('houses', {
             'X-Api-Key': 'NR3DQitLcfy84se9njdwqkGgAXaFZW0J'
           }
         })
+        this.houses.map(house => {
+          if(house.id === parseInt(id)) {
+            house.price = listingUpdate.price,
+            house.rooms.bedrooms = listingUpdate.bedrooms,
+            house.rooms.bathrooms= listingUpdate.bathrooms,
+            house.size =  listingUpdate.size,
+            house.description= listingUpdate.description,
+            house.location.streetName= listingUpdate.streetName,
+            house.location.houseNumber= listingUpdate.houseNumber,
+            house.location.numberAddition= listingUpdate.numberAddition,
+            house.location.zip= listingUpdate.zip,
+            house.location.city= listingUpdate.city,
+            house.constructionYear= listingUpdate.constructionYear,
+            house.hasGarage = listingUpdate.hasGarage
+          }
+        })
+
+        await this.getHouses();
+        router.push(`/house/${parseInt(id)}`)
       } catch (error) {
         console.log(error)
       } finally {
@@ -162,10 +185,7 @@ export const useHousesStore = defineStore('houses', {
         this.loading = false
       }
      
-    },
-    findHouse(itemID) {
-      const house = this.houses.find((obj) => obj.id === itemID)
-      return house
     }
-  }
+  }, 
+  persist: true,
 })

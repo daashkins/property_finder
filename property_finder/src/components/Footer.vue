@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { RouterLink } from 'vue-router';
-import { watch } from "vue";
+// import { watch } from "vue";
 import { useRoute } from "vue-router";
 
 let activeHome = ref(true);
@@ -9,18 +9,15 @@ let activeInfo = ref(false);
 
 const route = useRoute();
 
-watch(
-    () => route.fullPath,
-    async () => {
-        if (route.fullPath === '/about') {
-            activeInfo.value = true;
-            activeHome.value = false;
-        } else {
-            activeInfo.value = false;
-            activeHome.value = true;
-        }
-    }
-);
+watchEffect(() => {
+if (route.fullPath === '/about'){
+    activeInfo.value = true;
+    activeHome.value = false;
+} else {
+    activeInfo.value = false;
+    activeHome.value = true;
+}
+})
 </script>
 
 <template>
@@ -57,26 +54,28 @@ footer {
     left: 0;
     right: 0;
 
-        .footer-navigation {
-            margin: 0 auto;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            width: 85%;
-            list-style: none;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            img{
-                width: 70%;
-}
-            }
+    .footer-navigation {
+        margin: 0 auto;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        width: 85%;
+        list-style: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        img {
+            width: 70%;
         }
-    
+    }
+}
+
 
 
 @media only screen and (max-width: 600px) {
     footer {
         display: block;
     }
-}</style>
+}
+</style>

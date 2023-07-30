@@ -15,7 +15,7 @@ const router = createRouter({
       component: () => import('../views/HouseDetailsView.vue')
     },
     {
-      path: '/edit/:id',
+      path: '/house/edit/:id',
       name: 'edit',
       component: () => import('../views/EditHouseView.vue')
     },
@@ -33,8 +33,8 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     }
   ],
-  linkActiveClass: 'active-link',
-  linkExactActiveClass: 'exact-active-link',
+  // linkActiveClass: 'active-link',
+  // linkExactActiveClass: 'exact-active-link',
 })
 
 

@@ -17,10 +17,6 @@ const handleSearch = (event) => {
 const handleFocus = () => {
     toShow.value = true;
 }
-// const handleFocusRemove = () => {
-//     toShow.value = false;
-// }
-
 
 const handleClear = () => {
     searchValue.value = "";

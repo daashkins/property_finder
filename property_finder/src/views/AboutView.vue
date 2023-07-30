@@ -78,4 +78,10 @@
     }
 
   }
-}</style>
+}
+  @media only screen and (max-width: 600px) {
+    .about-footer-main {
+      margin-bottom: 100px!important;
+  }
+}
+</style>

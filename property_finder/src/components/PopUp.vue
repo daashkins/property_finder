@@ -61,12 +61,13 @@ const handleDelete = async (id) => {
     background-color: $color-bg-2;
     border-radius: 8px;
     // margin: 0 auto;
-    padding: 20px;
-    width: 30%;
-    height: 40%;
+    padding: 50px;
+    width: 40%;
+    // height: 40%;
     display: flex;
     flex-direction: column;
     align-items: center;
+justify-content: space-between;
 
     h3 {
         margin-bottom: 20px;
@@ -74,6 +75,7 @@ const handleDelete = async (id) => {
 
     p {
         color: $color-text-secondary;
+        text-align: center;
     }
 
     .last-p {
@@ -97,5 +99,18 @@ const handleDelete = async (id) => {
             margin-bottom: 20px;
         }
     }
+}
+
+@media only screen and (max-width: 600px) {
+    .modal-container{
+    width: 90%;
+    padding: 35px;
+   }
+}
+
+@media only screen and (max-width: 1200px) and (min-width: 600px) {
+   .modal-container{
+    width: 50%;
+   }
 }
 </style>

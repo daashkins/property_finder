@@ -25,6 +25,10 @@ defineProps({
   options: {
     type: Array,
   },
+  error: {
+    type: Boolean,
+    default: false
+  },
   modelValue: {
     type: [String, Number, File],
     default: ""
@@ -35,8 +39,8 @@ defineProps({
 <template>
   <div class="input-container">
     <label :for="inputId" class="input-title">{{ inputLabel }} <sup v-if="isRequired" class="star">*</sup></label>
-
-    <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)" :required='isRequired'>
+    
+    <select v-if="select" :id="inputId" @input="$emit('update:modelValue', $event.target.value)" :class="error && 'input-error'">
       <option class="input" value="">Select</option>
       <option v-for="(option, index) in options" :key="index" :value="option" class="input"
         :selected="modelValue === option">
@@ -44,10 +48,10 @@ defineProps({
       </option>
     </select>
 
-    <textarea v-else-if="textarea" :id="inputId" rows="4" cols="50" :placeholder="placeholder" class="input"
-      :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :required='isRequired'></textarea>
+    <textarea v-else-if="textarea" :id="inputId" rows="4" cols="50" :placeholder="placeholder" class="input" :class="error && 'input-error'"
+      :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" ></textarea>
 
-    <input v-else type="text" :id="inputId" :placeholder="placeholder" :required='isRequired' class="input"
+    <input v-else type="text" :id="inputId" :placeholder="placeholder"  class="input" :class="error && 'input-error'"
       :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
 
   </div>
@@ -65,6 +69,7 @@ defineProps({
   width: 100%;
 
   label {
+    margin-top: 10px;
     margin-bottom: 10px;
     color: $color-text-secondary;
   }
@@ -78,9 +83,13 @@ defineProps({
     margin-bottom: 10px;
   }
 
+  .input:focus {
+    outline: none;
+    border: none;
+  } 
   input:focus,
-  select:focus,
-  textarea:focus {
+  select:focus
+   {
     outline: none;
     border: none;
   }
@@ -89,12 +98,17 @@ defineProps({
     width: 100%;
   }
 
+  .input-error {
+    border: 1px solid red;
+  }
+
   select,
   option {
     font-family: "Open Sans", sans-serif;
     font-weight: 400;
     font-size: 14px;
     color: #777777;
+    padding: 8.5px;
   }
 
   option {
@@ -106,9 +120,11 @@ defineProps({
 
 @media only screen and (max-width: 600px) {
   .input-container {
-    textarea {
-      margin-bottom: 100px;
+    select,
+    option {
+      font-size: 12px;
     }
   }
+
 }
 </style>

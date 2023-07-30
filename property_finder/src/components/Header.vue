@@ -1,6 +1,16 @@
 <script setup>
+import { watchEffect, ref } from 'vue';
 import { RouterLink } from 'vue-router';
+import { useRoute } from "vue-router";
+
+let currentURL = ref(null)
+const route = useRoute();
+
+watchEffect(() => {
+    currentURL.value = route.fullPath
+})
 </script>
+
 
 <template>
     <header>
@@ -8,10 +18,10 @@ import { RouterLink } from 'vue-router';
             <img class="logo" src="../assets/img_logo_dtt@3x.png" alt="Logo">
             <ul class="navigation">
                 <li class="menu">
-                    <RouterLink to="/" active-class="active-link" exact-active-class="exact-active-link">Houses</RouterLink>
+                    <RouterLink to="/" :class="currentURL.includes('house') || currentURL === '/' || currentURL === '/create' ? 'exact-active-link': '' ">Houses</RouterLink>
                 </li>
                 <li class="menu">
-                    <RouterLink to="/about" active-class="active-link" exact-active-class="exact-active-link">About</RouterLink>
+                    <RouterLink to="/about" :class="currentURL.includes('/about') && 'exact-active-link'">About</RouterLink>
                 </li>
             </ul>
         </div>

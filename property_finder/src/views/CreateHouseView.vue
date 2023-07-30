@@ -4,15 +4,16 @@ import Input from '../components/Input.vue'
 import { RouterLink } from 'vue-router'
 import { reactive, watchEffect, ref } from 'vue';
 import { useHousesStore } from "../stores/useHousesStore.js";
-import {useVuelidate} from '@vuelidate/core';
-import {required} from '@vuelidate/validators';
+import router from '../router/index'
+import { useVuelidate } from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
 
 const store = useHousesStore();
 
 const selectOptions = ref(["Yes", "No"]);
+const buttonActive = ref(false);
 
 const hasGarage = ref(null);
-
 const newListing = reactive({
     price: null,
     bedrooms: null,
@@ -26,26 +27,27 @@ const newListing = reactive({
     city: "",
     constructionYear: null,
     hasGarage: hasGarage.value === 'Yes' ? true : false,
-    image : null,
+    image: null,
 })
 
 const rules = {
-    price: {required},
-    bedrooms: {required},
-    bathrooms: {required},
-    size: {required},
-    description: {required},
-    streetName: {required},
-    houseNumber: {required},
-    numberAddition: {required},
-    zip: {required},
-    city: {required},
-    constructionYear: {required},
-    hasGarage: {required},
-    image: {required}
+    price: { required },
+    bedrooms: { required },
+    bathrooms: { required },
+    size: { required },
+    description: { required },
+    streetName: { required },
+    houseNumber: { required },
+    zip: { required },
+    city: { required },
+    constructionYear: { required },
+    hasGarage: { required },
+    image: { required }
 }
+const rulesForSelect = { required }
 
 const v$ = useVuelidate(rules, newListing)
+const f$ = useVuelidate(rulesForSelect, hasGarage)
 
 const fileInput = ref(null);
 let imageData = ref(null);
@@ -72,26 +74,34 @@ watchEffect(() => {
     }
 })
 
+watchEffect(() => {
+    if (newListing.price !== null &&
+        newListing.bedrooms !== null&&
+        newListing.bathrooms !== null &&
+        newListing.size !== null &&
+        newListing.description !== ""&&
+        newListing.streetName !== "" &&
+        newListing.houseNumber !== null &&
+        newListing.zip !== "" &&
+        newListing.city !== "" &&
+        newListing.constructionYear !== null &&
+        newListing.image !== null&&
+        imageData.value !== "" &&
+        imageData.value !== null &&
+        hasGarage.value !== null ) {
+        buttonActive.value = true
+    }
+})
+
+
 const handleSubmit = async (event) => {
     event.preventDefault();
     const result = await v$.value.$validate()
-    if (result) {
-    await store.createHouse(newListing)
-    newListing.price = null;
-    newListing.bedrooms = null;
-    newListing.bathrooms = null;
-    newListing.size = null;
-    newListing.description = "";
-    newListing.streetName = "";
-    newListing.houseNumber = null;
-    newListing.numberAddition = "";
-    newListing.zip = "";
-    newListing.city = "";
-    newListing.constructionYear = null;
-    newListing.image = "";
-    imageData.value = null;
-    } else  {
-        alert('no')
+    const resultGarage = await f$.value.$validate()
+    if (result && resultGarage) {
+        await store.createHouse(newListing)
+        v$.$reset();
+        f$.$reset();
     }
 }
 </script>
@@ -101,27 +111,43 @@ const handleSubmit = async (event) => {
         <div class="container">
             <div class="top-main">
                 <RouterLink to="/">
-                    <Button backIcon textAppearence isNoBg class="custom-text-color back-button">
-                        Back to overview
+                    <Button text="Back to overview" textAppearence class="custom-text-color back-button" @click="router.push('/')">
+                        <img class="icon-back-dark" src="../assets/ic_back_grey@3x.png" alt="Back">
                     </Button>
                 </RouterLink>
                 <h2>Create new listing</h2>
             </div>
             <form @submit="handleSubmit">
-                <Input inputLabel='Street name' inputId="streetName" placeholder="Enter the street name"
-                    v-model="newListing.streetName" isRequired />
+                <Input inputLabel='Street name' inputId="streetName" placeholder="Enter the street name" 
+                    v-model="newListing.streetName" :error="v$.streetName.$errors.length >=1 ? true : false" isRequired/>
+                <span class="error-message error" v-for="error in v$.streetName.$errors" :key="error.$uid">
+                    Required field missing </span>
+
                 <div class="input-group">
-                    <Input inputLabel='House number' inputId="houseNumber" placeholder="Enter house number"
-                        v-model="newListing.houseNumber" isRequired />
-                    <Input inputLabel='Addition (optional)' inputId="addition" placeholder="e.g. A" :isRequired="false"
-                        v-model="newListing.houseAddition" />
+                    <div>
+                        <Input inputLabel='House number' inputId="houseNumber" placeholder="Enter house number"
+                            v-model="newListing.houseNumber" :error="v$.houseNumber.$errors.length >=1 ? true : false" isRequired/>
+                        <span class="error-message error" v-for="error in v$.houseNumber.$errors" :key="error.$uid">
+                            Required field missing </span>
+                    </div>
+                    <div>
+                        <Input inputLabel='Addition (optional)' inputId="addition" placeholder="e.g. A" :isRequired="false"
+                            v-model="newListing.houseAddition" />
+                    </div>
                 </div>
-                <Input inputLabel='Postal code' inputId="postal" placeholder="e.g. 1000 AA" isRequired
-                    v-model="newListing.zip" />
-                <Input inputLabel='City' inputId="city" placeholder="e.g Utrecht" isRequired v-model="newListing.city" />
+
+                <Input inputLabel='Postal code' inputId="postal" placeholder="e.g. 1000 AA" v-model="newListing.zip" :error="v$.zip.$errors.length >=1 ? true : false" isRequired/>
+                <span class="error-message error" v-for="error in v$.zip.$errors" :key="error.$uid">
+                    Required field missing </span>
+
+                <Input inputLabel='City' inputId="city" placeholder="e.g Utrecht" v-model="newListing.city" :error="v$.city.$errors.length >=1 ? true : false" isRequired/>
+                <span class="error-message error" v-for="error in v$.city.$errors" :key="error.$uid">
+                    Required field missing </span>
+
                 <div class="input-upload">
-                    <label class="input-title">Upload picture (PNG or JPG) <sup class="star">*</sup></label>
-                    <div class="image-input" :style="{ 'background-image': `url(${imageData})` }" @click.stop="chooseImage">
+                    <label class="input-title" >Upload picture (PNG or JPG) <sup class="star" >*</sup></label>
+                    {{ v$.image.$errors.length >= 1 }}
+                    <div class="image-input" :class="v$.image.$errors.length >= 1 ? 'image-input-error' : ''" :style="{ 'background-image': `url(${imageData})` }" @click.stop="chooseImage">
                         <div v-if="imageData" class="image-clear-button" @click.stop="clearImage">
                             <img src="../assets/ic_clear_white@3x.png" alt="">
                         </div>
@@ -130,28 +156,51 @@ const handleSubmit = async (event) => {
                         </span>
                         <input class="file-input" ref="fileInput" type="file" @input='addFile'>
                     </div>
+                    <span class="error-message error" v-for="error in v$.image.$errors" :key="error.$uid">
+                        Required field missing </span>
                 </div>
-                <Input inputLabel='Price' inputId="price" placeholder="e.g &#8364; 150.000" v-model="newListing.price"
-                    isRequired />
+                <Input inputLabel='Price' inputId="price" placeholder="e.g &#8364; 150.000" v-model="newListing.price" :error="v$.price.$errors.length >=1 ? true : false" isRequired/>
+                <span class="error-message error" v-for="error in v$.price.$errors" :key="error.$uid">
+                    Required field missing</span>
                 <div class="input-group">
-                    <Input inputLabel='Size' inputId="size" placeholder="e.g 60m2" v-model="newListing.size" isRequired />
-                    <Input inputLabel='Garage' inputId="garage" placeholder="Select" select :options="selectOptions"
-                        v-model="hasGarage" isRequired />
+                    <div>
+                        <Input inputLabel='Size' inputId="size" placeholder="e.g 60m2" v-model="newListing.size" :error="v$.size.$errors.length >=1 ? true : false" isRequired/>
+                        <span class="error-message error" v-for="error in v$.size.$errors" :key="error.$uid">
+                            Required field missing</span>
+                    </div>
+                    <div>
+                        <Input inputLabel='Garage' inputId="garage" placeholder="Select" select :options="selectOptions"
+                            v-model="hasGarage" :error="f$.$errors.length >=1 ? true : false" isRequired/>
+                        <span class="error-message error" v-for="error in f$.$errors" :key="error.$uid">
+                            Required field missing</span>
+                    </div>
+
                 </div>
                 <div class="input-group">
-                    <Input inputLabel='Bedrooms' inputId="bedrooms" placeholder="Enter amount" v-model="newListing.bedrooms"
-                        isRequired />
-                    <Input inputLabel='Bathrooms' inputId="bathrooms" placeholder="Enter amount"
-                        v-model="newListing.bathrooms" isRequired />
+                    <div>
+                        <Input inputLabel='Bedrooms' inputId="bedrooms" placeholder="Enter amount"
+                            v-model="newListing.bedrooms" :error="v$.bedrooms.$errors.length >=1 ? true : false" isRequired/>
+                        <span class="error-message error" v-for="error in v$.bedrooms.$errors" :key="error.$uid">
+                            Required field missing</span>
+                    </div>
+                    <div>
+                        <Input inputLabel='Bathrooms' inputId="bathrooms" placeholder="Enter amount"
+                            v-model="newListing.bathrooms" :error="v$.bathrooms.$errors.length >=1 ? true : false" isRequired/>
+                        <span class="error-message error" v-for="error in v$.bathrooms.$errors" :key="error.$uid">
+                            Required field missing</span>
+                    </div>
                 </div>
                 <Input inputLabel='Construction date' inputId="construction" placeholder="e.g. 1990"
-                    v-model="newListing.constructionYear" isRequired />
+                    v-model="newListing.constructionYear" :error="v$.constructionYear.$errors.length >=1 ? true : false" isRequired/>
+                <span class="error-message error" v-for="error in v$.constructionYear.$errors" :key="error.$uid">
+                    Required field missing</span>
                 <Input inputLabel='Description' inputId="description" placeholder="Enter description" textarea
-                    v-model="newListing.description" isRequired />
-
-
-                <Button isSubmit isPrimary >POST</Button>
+                    v-model="newListing.description" :error="v$.description.$errors.length >=1 ? true : false" isRequired/>
+                <span class="error-message error" v-for="error in v$.description.$errors" :key="error.$uid">
+                    Required field missing {{  v$.description.$errors.length >=1 }}</span>
+                <Button isSubmit isPrimary :style="{ 'opacity': buttonActive === false ? '0.5' : '1' }">POST</Button>
             </form>
+
         </div>
     </main>
 </template>
@@ -178,8 +227,6 @@ const handleSubmit = async (event) => {
 
 .top-main {
     margin-top: 50px;
-    padding-bottom: 30px;
-
     .custom-text-color {
         color: $color-text-primary !important;
         padding-left: 0 !important;
@@ -190,10 +237,14 @@ const handleSubmit = async (event) => {
     }
 }
 
+.icon-back-dark {
+    height: 16px;
+}
+
 form {
     margin-top: 20px;
     width: 45%;
-
+  
     .input-group {
         display: flex;
         flex-direction: row;
@@ -201,19 +252,25 @@ form {
 
         div {
             width: 47%;
+
+            div {
+                width: 100%;
+            }
         }
     }
+   
     button {
         margin-left: auto;
-        margin-top: 10px;
+        margin-top: 30px;
         margin-bottom: 20px;
-        width: 30%;
+        width: 40%;
         display: flex;
         justify-content: center;
-}
+    }
 
     .input-upload {
-        margin-bottom: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
 
         .input-title {
             color: $color-text-secondary;
@@ -231,6 +288,7 @@ form {
             background-size: cover;
             background-position: center center;
             margin-top: 10px;
+            margin-bottom: 10px;
 
             img {
                 width: 18px;
@@ -242,6 +300,10 @@ form {
                 top: -10px;
                 cursor: pointer;
             }
+        }
+        .image-input-error{
+            border-color:red;
+
         }
 
         .placeholder {
@@ -257,15 +319,15 @@ form {
             display: none;
         }
     }
+
+    span {
+        color: red;
+    }
 }
 
 @media only screen and (max-width: 600px) {
     .main-with-bg {
-        min-height: 100%;
-        // background-image: url('../assets/img_background@3x.png');
-        // background-size: contain;
-        // background-position: right bottom;
-        // background-repeat: no-repeat;
+        height: auto;
     }
 
     .top-main {
@@ -285,5 +347,10 @@ form {
     form {
         width: 100%;
         margin-bottom: 100px;
+
+        button {
+            width: 100%;
+        }
     }
-}</style>
+}
+</style>

@@ -4,26 +4,6 @@ defineProps({
     type: Boolean,
     default: false
   },
-  addIcon: {
-    type: Boolean,
-    default: false
-  },
-  editIcon: {
-    type: Boolean,
-    default: false
-  },
-  deleteIcon: {
-    type: Boolean,
-    default: false
-  },
-  backIcon: {
-    type: Boolean,
-    default: false
-  },
-  isBlured: {
-    type: Boolean,
-    default: false
-  },
   isPrimary: {
     type: Boolean,
     default: false
@@ -36,9 +16,9 @@ defineProps({
     type: Boolean,
     default: false
   },
-  isNoBg: {
-    type: Boolean,
-    default: false
+  text: {
+    type: String,
+    default: ""
   },
   isSubmit: {
     type: Boolean,
@@ -50,15 +30,11 @@ defineProps({
 </script>
 
 <template>
-  <button class="button" 
-    :class="{ 'primary': isPrimary, 'secondary': isSecondary, 'blured': isBlured, 'tertiary': isTertiary, 'back-button': backIcon }" :type="{isSubmit: 'submit'}">
-    <img :class="addIcon === true && 'icon-add-desktop'" src="../assets/ic_plus_white@3x.png" alt="Plus">
-    <img :class="addIcon === true && 'icon-add-mobile'" src="../assets/ic_plus_grey@3x.png" alt="Plus">
-    <img :class="editIcon === true && 'icon-edit'" src="../assets/ic_edit@3x.png" alt="Edit">
-    <img :class="deleteIcon === true && 'icon-delete'" src="../assets/ic_delete@3x.png" alt="Delete">
-    <img :class="backIcon === true && 'icon-back'" src="../assets/ic_back_grey@3x.png" alt="Back">
+  <button class="button" :class="{ 'primary': isPrimary, 'secondary': isSecondary, 'tertiary': isTertiary }"
+    :type="{ isSubmit: 'submit' }">
+    <slot></slot>
     <span :class="textAppearence === true && 'text-show'">
-      <slot></slot>
+      {{ text }}
     </span>
   </button>
 </template>
@@ -84,33 +60,6 @@ defineProps({
   border: 0;
   color: $color-bg-1;
 
-  img {
-    display: none;
-  }
-
-  .icon-add-desktop {
-    display: block;
-    height: 10px;
-  }
-
-  .icon-add-mobile {
-    display: none;
-    height: 10px;
-  }
-
-  .icon-edit {
-    display: block;
-    height: 16px;
-  }
-
-  .icon-delete {
-    display: block;
-    height: 16px;
-  }
-  .icon-back {
-    display: block;
-    height: 16px;
-  }
 }
 
 .primary {
@@ -125,27 +74,13 @@ defineProps({
   background-color: $color-tertiary-2;
 }
 
-.isNoBg {
-  background-color: transparent;
-}
-
 
 @media only screen and (max-width: 600px) {
   .button {
-    // background-color: transparent;
-
-    .icon-add-desktop {
-      display: none;
-    }
-
-    .icon-add-mobile {
-      display: block;
-      height: 20px;
-      
-    }
 
     .text-show {
       display: none;
     }
   }
-}</style>
+}
+</style>

@@ -31,7 +31,7 @@ const filterHouses = (event) => {
 button {
   padding-top: 11px; 
   padding-bottom: 10px;
-  min-width: 150px;
+  min-width: 100px;
   box-shadow: none;
   border: 0;
   background-color: $color-tertiary-2;
